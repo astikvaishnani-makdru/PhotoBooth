@@ -69,6 +69,7 @@ function getFrameFromVideo() {
 }
 
 // --- C. Capture and Poster Composition (FINAL ALIGNMENT FIX) ---
+// --- C. Capture and Poster Composition (FINAL ALIGNMENT FIX) ---
 function captureAndCompose() {
     if (!nameInput.value) {
         alert("Please enter your name before capturing the photo.");
@@ -103,12 +104,12 @@ function captureAndCompose() {
             // 5. START DRAWING
 
             // --- PHOTO DRAWING (CIRCULAR CLIP) ---
-            // Y-Center adjusted to better align with the vertical placement in the 300px poster.
-            const circleCenterY = 185; 
+            // Y-Center adjusted for optimal vertical placement in your template.
+            const circleCenterY = 190; 
             // X-Center adjusted to align with the circular cutout on the right side of the poster.
-            const circleCenterX = 460; 
-            // Radius adjusted for a tighter fit inside the black circle.
-            const circleRadius = 120; 
+            const circleCenterX = 435; 
+            // Radius adjusted for a tighter fit inside the black circle cutout (Diameter 210px).
+            const circleRadius = 105; 
             
             ctx.save(); // Save the canvas state before clipping
             
@@ -141,9 +142,9 @@ function captureAndCompose() {
             
             // Name Styling: Smaller font and adjusted coordinates to fit inside the name box
             ctx.font = 'bold 24px sans-serif'; 
-            // X-coordinate is now the same as the photo center X (460)
-            // Y-coordinate (285) is vertically centered in the name box
-            ctx.fillText(name, circleCenterX, 285); 
+            // X-coordinate matches the photo center X (435)
+            // Y-coordinate (275) is vertically centered in the name box
+            ctx.fillText(name, circleCenterX, 275); 
             
             // NOTE: Phone number drawing is intentionally removed.
         }; 
@@ -186,3 +187,4 @@ resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
 window.onload = setupCamera;
+
