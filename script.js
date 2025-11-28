@@ -107,7 +107,7 @@ function captureAndCompose() {
             // Y-Center adjusted for optimal vertical placement in your template.
             const circleCenterY = 190; 
             // X-Center adjusted to align with the circular cutout on the right side of the poster.
-            const circleCenterX = 435; 
+            const circleCenterX = 420; 
             // Radius adjusted for a tighter fit inside the black circle cutout (Diameter 210px).
             const circleRadius = 105; 
             
@@ -144,7 +144,7 @@ function captureAndCompose() {
             ctx.font = 'bold 24px sans-serif'; 
             // X-coordinate matches the photo center X (435)
             // Y-coordinate (275) is vertically centered in the name box
-            ctx.fillText(name, circleCenterX, 270); 
+            ctx.fillText(name, circleCenterX, 250); 
             
             // NOTE: Phone number drawing is intentionally removed.
         }; 
@@ -187,6 +187,7 @@ resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
 window.onload = setupCamera;
+
 
 
 
