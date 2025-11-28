@@ -71,6 +71,11 @@ function captureAndCompose() {
     resultSection.style.display = 'block';
 
     const frameImg = new Image();
+    frameImg.onerror = () => {
+    // This alert will pop up if the image file is not found or corrupted
+    alert("CRITICAL ERROR: 'Soma_Yagna_Transparent.png' failed to load. Check file name and path.");
+    console.error("Image loading failed.");
+    };
     frameImg.onload = () => {
         // 1. Draw the captured photo (adjust coordinates as needed)
         const photoWidth = 550; 
@@ -135,6 +140,7 @@ resetBtn.addEventListener('click', resetApp);
 // Start the app on load
 
 window.onload = setupCamera;
+
 
 
 
