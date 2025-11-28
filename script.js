@@ -100,7 +100,7 @@ function captureAndCompose() {
         }
     };
     // **IMPORTANT: Must be in the same folder as index.html**
-    frameImg.src = 'Soma_Yagna.png'; 
+    frameImg.src = 'Soma_Yagna_Transparent.png'; 
 }
 
 // --- D. Download ---
@@ -135,4 +135,5 @@ resetBtn.addEventListener('click', resetApp);
 // Start the app on load
 
 window.onload = setupCamera;
+
 
