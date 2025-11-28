@@ -55,14 +55,28 @@ function sendDataToSheets(name, phone) {
     }).then(() => console.log("Data submitted successfully")).catch(err => console.error("Data submission failed:", err));
 }
 
-
+function getFrameFromVideo() {
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = video.videoWidth;
+    tempCanvas.height = video.videoHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // Draw the current frame of the live video onto the temporary canvas
+    tempCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+    
+    // Create an Image element from the canvas data
+    const capturedImage = new Image();
+    capturedImage.src = tempCanvas.toDataURL('image/jpeg'); // JPEG is smaller and faster
+    
+    return capturedImage; // Returns the static photo data
+}
 // --- C. Capture and Poster Composition ---
 function captureAndCompose() {
     if (!nameInput.value) {
         alert("Please enter your name before capturing the photo.");
         return;
     }
-
+    const capturedImage = getFrameFromVideo();
     // Stop video stream and switch sections
     if (video.srcObject) {
         video.srcObject.getTracks().forEach(track => track.stop());
@@ -83,7 +97,7 @@ function captureAndCompose() {
         const photoX = 25;
         const photoY = 320;
         //ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, photoX, photoY, photoWidth, photoHeight);
-        ctx.drawImage(video, photoX, photoY, photoWidth, photoHeight);
+        ctx.drawImage(capturedImage, photoX, photoY, photoWidth, photoHeight);
 
         // 2. Draw the PNG Frame OVER the photo
         ctx.drawImage(frameImg, 0, 0, POSTER_WIDTH, POSTER_HEIGHT);
@@ -141,6 +155,7 @@ resetBtn.addEventListener('click', resetApp);
 // Start the app on load
 
 window.onload = setupCamera;
+
 
 
 
