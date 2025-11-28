@@ -88,7 +88,7 @@ function captureAndCompose() {
 
     // 3. LOAD FRAME IMAGE
     const frameImg = new Image();
-    frameImg.src = 'Soma_Yagna_Transparent.png'; 
+    frameImg.src = 'Yagna.png'; 
     
     // Add error handler for the frame image
     frameImg.onerror = () => {
@@ -187,4 +187,5 @@ resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
 window.onload = setupCamera;
+
 
