@@ -58,8 +58,10 @@ function getFrameFromVideo() {
     tempCanvas.height = video.videoHeight;
     const tempCtx = tempCanvas.getContext('2d');
     
+    // Draw the current frame of the live video onto the temporary canvas
     tempCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
     
+    // Create an Image element from the canvas data
     const capturedImage = new Image();
     capturedImage.src = tempCanvas.toDataURL('image/jpeg');
     
@@ -73,22 +75,27 @@ function captureAndCompose() {
         return;
     }
     
+    // 1. CAPTURE FRAME IMMEDIATELY
     const capturedImage = getFrameFromVideo();
     
+    // 2. Stop video stream and switch sections
     if (video.srcObject) {
         video.srcObject.getTracks().forEach(track => track.stop());
     }
     captureSection.style.display = 'none';
     resultSection.style.display = 'block';
 
+    // 3. LOAD FRAME IMAGE
     const frameImg = new Image();
     frameImg.src = 'Soma_Yagna_Transparent.png'; 
     
+    // Add error handler for the frame image
     frameImg.onerror = () => {
         alert("CRITICAL ERROR: 'Soma_Yagna_Transparent.png' failed to load. Check file name and path.");
         console.error("Image loading failed.");
     };
 
+    // 4. WAIT FOR BOTH IMAGES TO LOAD BEFORE DRAWING
     frameImg.onload = () => {
         
         capturedImage.onload = () => {
@@ -96,18 +103,19 @@ function captureAndCompose() {
             // 5. START DRAWING
 
             // --- PHOTO DRAWING (CIRCULAR CLIP) ---
-            const circleCenterY = 150; // Y-Center (1/2 of 300px height) - CORRECT
-            
-            // 💡 NEW X-COORDINATE: Shifted right to align with the cutout
+            // Y-Center adjusted to better align with the vertical placement in the 300px poster.
+            const circleCenterY = 185; 
+            // X-Center adjusted to align with the circular cutout on the right side of the poster.
             const circleCenterX = 460; 
-            const circleRadius = 145; 
+            // Radius adjusted for a tighter fit inside the black circle.
+            const circleRadius = 120; 
             
-            ctx.save(); 
+            ctx.save(); // Save the canvas state before clipping
             
             // Begin the circular clipping path
             ctx.beginPath();
             ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2);
-            ctx.clip(); 
+            ctx.clip(); // Apply the clip mask
 
             // Draw the captured image within the circular mask
             ctx.drawImage(
@@ -120,7 +128,7 @@ function captureAndCompose() {
                 circleRadius * 2  
             );
 
-            ctx.restore(); 
+            ctx.restore(); // Restore the canvas state (turns clipping off)
 
             // --- FRAME DRAWING (Must be drawn OVER the photo) ---
             ctx.drawImage(frameImg, 0, 0, POSTER_WIDTH, POSTER_HEIGHT);
@@ -129,17 +137,18 @@ function captureAndCompose() {
             const name = nameInput.value;
 
             ctx.fillStyle = '#000000'; 
-            
-            // Set text alignment to center so the text is centered on the X coordinate
             ctx.textAlign = 'center';
             
-            // 💡 NEW X-COORDINATE: Shifted right to align with the name box below the circle
-            ctx.font = 'bold 36px sans-serif';
-            ctx.fillText(name, circleCenterX, 280); 
+            // Name Styling: Smaller font and adjusted coordinates to fit inside the name box
+            ctx.font = 'bold 24px sans-serif'; 
+            // X-coordinate is now the same as the photo center X (460)
+            // Y-coordinate (285) is vertically centered in the name box
+            ctx.fillText(name, circleCenterX, 285); 
             
             // NOTE: Phone number drawing is intentionally removed.
         }; 
         
+        // If the captured image is already loaded (it often is), this triggers the onload immediately.
         if (capturedImage.complete) {
             capturedImage.onload();
         }
