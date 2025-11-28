@@ -107,7 +107,7 @@ function captureAndCompose() {
             // Y-Center adjusted for optimal vertical placement in your template.
             const circleCenterY = 190; 
             // X-Center adjusted to align with the circular cutout on the right side of the poster.
-            const circleCenterX = 435; 
+            const circleCenterX = 400; 
             // Radius adjusted for a tighter fit inside the black circle cutout (Diameter 210px).
             const circleRadius = 105; 
             
@@ -187,5 +187,6 @@ resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
 window.onload = setupCamera;
+
 
 
