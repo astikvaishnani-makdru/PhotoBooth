@@ -17,13 +17,10 @@ posterCanvas.height = POSTER_HEIGHT;
 // =======================================================
 // === ⚠️ 1. GOOGLE FORMS DATA COLLECTION CONFIG ⚠️ ===
 // -------------------------------------------------------
-// REPLACE these values with your actual Google Form details (Entry IDs and URL)
-const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScBgiUAmxaQD03NKGhu7W2K9ZhXOPaTYyoLaBdlp_0h6vEvNA/viewform?usp=dialog"; 
+// CRITICAL FIX: Changed /viewform?usp=dialog to /formResponse for submission to work.
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScBgiUAmxaQD03NKGhu7W2K9ZhXOPaTYyoLaBdlp_0h6vEvNA/formResponse"; 
 const NAME_FIELD = "entry.1741974273";
-const PHONE_FIELD = "entry.729256729";
-//const FORM_URL = "https://docs.google.com/forms/d/e/YOUR_UNIQUE_FORM_ID/formResponse";
-//const NAME_FIELD = "entry.YOUR_NAME_ENTRY_ID"; 
-//const PHONE_FIELD = "entry.YOUR_PHONE_ENTRY_ID";
+const PHONE_FIELD = "entry.729256729"; // Phone number will still be logged but not displayed.
 // =======================================================
 
 
@@ -66,12 +63,12 @@ function getFrameFromVideo() {
     
     // Create an Image element from the canvas data
     const capturedImage = new Image();
-    capturedImage.src = tempCanvas.toDataURL('image/jpeg'); // JPEG is smaller and faster
+    capturedImage.src = tempCanvas.toDataURL('image/jpeg');
     
     return capturedImage; // Returns the static photo data
 }
-// --- C. Capture and Poster Composition ---
-// --- C. Capture and Poster Composition (FIXED) ---
+
+// --- C. Capture and Poster Composition (FINAL CIRCULAR FIX) ---
 function captureAndCompose() {
     if (!nameInput.value) {
         alert("Please enter your name before capturing the photo.");
@@ -99,43 +96,50 @@ function captureAndCompose() {
     };
 
     // 4. WAIT FOR BOTH IMAGES TO LOAD BEFORE DRAWING
-    
-    // We'll use the FRAME IMAGE's onload to kick off the drawing sequence.
     frameImg.onload = () => {
         
-        // NOW, we must also wait for the CAPTURED IMAGE to be ready.
         capturedImage.onload = () => {
 
-            // 5. START DRAWING (Photo and text draw correctly now!)
-            
-            // Draw the captured photo (adjust coordinates as needed)
-            const photoWidth = 550; 
-            const photoHeight = 450;
-            const photoX = 25;
-            const photoY = 320;
-            
-            // Draw the static captured image object
-            ctx.drawImage(capturedImage, photoX, photoY, photoWidth, photoHeight);
+            // 5. START DRAWING
 
-            // Draw the PNG Frame OVER the photo
+            // --- PHOTO DRAWING (CIRCULAR CLIP) ---
+            const circleCenterY = 460; // Center Y based on your new cutout location
+            const circleCenterX = POSTER_WIDTH / 2; // 300
+            const circleRadius = 145; // Half of the photo's approximate width
+            
+            ctx.save(); // Save the canvas state before clipping
+            
+            // Begin the circular clipping path
+            ctx.beginPath();
+            ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2);
+            ctx.clip(); // Apply the clip mask
+
+            // Draw the captured image within the circular mask
+            // This centers the photo in the circle
+            ctx.drawImage(
+                capturedImage, 
+                circleCenterX - circleRadius, 
+                circleCenterY - circleRadius, 
+                circleRadius * 2, // 290px wide
+                circleRadius * 2  // 290px tall
+            );
+
+            ctx.restore(); // Restore the canvas state (turns clipping off)
+
+            // --- FRAME DRAWING (Must be drawn OVER the photo) ---
             ctx.drawImage(frameImg, 0, 0, POSTER_WIDTH, POSTER_HEIGHT);
 
-            // Draw the Text Details
+            // --- TEXT DRAWING (Below the circle) ---
             const name = nameInput.value;
-            const phone = phoneInput.value;
 
-            ctx.fillStyle = '#000000'; // Black text
+            ctx.fillStyle = '#000000'; 
             ctx.textAlign = 'center';
             
-            // Name Styling
+            // Name Styling: Placing the text inside the rectangle cutout below the circle
             ctx.font = 'bold 36px sans-serif';
-            ctx.fillText(name, POSTER_WIDTH / 2, 750); 
-
-            // Phone Styling (smaller, optional)
-            if (phone) {
-                ctx.font = '24px sans-serif';
-                ctx.fillText(phone, POSTER_WIDTH / 2, 780); 
-            }
+            ctx.fillText(name, POSTER_WIDTH / 2, 675); // Adjusted Y coordinate for the name box
+            
+            // NOTE: Phone number drawing is intentionally removed.
         }; 
         
         // If the captured image is already loaded (it often is), this triggers the onload immediately.
@@ -175,14 +179,4 @@ downloadBtn.addEventListener('click', downloadPoster);
 resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
-
 window.onload = setupCamera;
-
-
-
-
-
-
-
-
-
