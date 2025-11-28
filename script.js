@@ -18,7 +18,7 @@ posterCanvas.height = POSTER_HEIGHT;
 // === ⚠️ 1. GOOGLE FORMS DATA COLLECTION CONFIG ⚠️ ===
 // -------------------------------------------------------
 // REPLACE these values with your actual Google Form details (Entry IDs and URL)
-const FORM_URL = "https://forms.gle/uhTvErcqV1a9EsrV6"; 
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScBgiUAmxaQD03NKGhu7W2K9ZhXOPaTYyoLaBdlp_0h6vEvNA/viewform?usp=dialog"; 
 const NAME_FIELD = "entry.1741974273";
 const PHONE_FIELD = "entry.729256729";
 //const FORM_URL = "https://docs.google.com/forms/d/e/YOUR_UNIQUE_FORM_ID/formResponse";
@@ -135,3 +135,4 @@ resetBtn.addEventListener('click', resetApp);
 // Start the app on load
 
 window.onload = setupCamera;
+
