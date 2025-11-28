@@ -103,7 +103,7 @@ function captureAndCompose() {
             // 5. START DRAWING
 
             // --- PHOTO DRAWING (CIRCULAR CLIP) ---
-            const circleCenterY = 460; // Center Y based on your new cutout location
+            const circleCenterY = 150; // Center Y based on your new cutout location
             const circleCenterX = POSTER_WIDTH / 2; // 300
             const circleRadius = 145; // Half of the photo's approximate width
             
@@ -137,7 +137,7 @@ function captureAndCompose() {
             
             // Name Styling: Placing the text inside the rectangle cutout below the circle
             ctx.font = 'bold 36px sans-serif';
-            ctx.fillText(name, POSTER_WIDTH / 2, 675); // Adjusted Y coordinate for the name box
+            ctx.fillText(name, POSTER_WIDTH / 2, 280); // Adjusted Y coordinate for the name box
             
             // NOTE: Phone number drawing is intentionally removed.
         }; 
@@ -180,4 +180,5 @@ resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
 window.onload = setupCamera;
+
 
