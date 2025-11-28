@@ -34,8 +34,6 @@ input[type="text"], input[type="tel"] {
 /* Ensure the canvas is only visible when needed, and sized correctly for the poster */
 #poster-canvas {
     display: block;
-    width: 100%; 
-    height: auto; 
     border: 1px solid #ccc;
     margin: 15px 0;
 }
@@ -54,4 +52,5 @@ button {
 
 button:hover {
     background-color: #45a049;
+
 }
