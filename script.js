@@ -76,7 +76,7 @@ function captureAndCompose() {
         const photoWidth = 550; 
         const photoHeight = 450;
         const photoX = 25;
-        const photoY = 25;
+        const photoY = 320;
         ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, photoX, photoY, photoWidth, photoHeight);
 
         // 2. Draw the PNG Frame OVER the photo
@@ -135,5 +135,6 @@ resetBtn.addEventListener('click', resetApp);
 // Start the app on load
 
 window.onload = setupCamera;
+
 
 
