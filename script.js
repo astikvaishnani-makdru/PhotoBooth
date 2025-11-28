@@ -10,7 +10,7 @@ const resultSection = document.getElementById('result-section');
 const ctx = posterCanvas.getContext('2d');
 
 const POSTER_WIDTH = 600;
-const POSTER_HEIGHT = 800;
+const POSTER_HEIGHT = 300;
 posterCanvas.width = POSTER_WIDTH;
 posterCanvas.height = POSTER_HEIGHT;
 
@@ -180,3 +180,4 @@ resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
 window.onload = setupCamera;
+
