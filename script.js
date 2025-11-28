@@ -71,56 +71,78 @@ function getFrameFromVideo() {
     return capturedImage; // Returns the static photo data
 }
 // --- C. Capture and Poster Composition ---
+// --- C. Capture and Poster Composition (FIXED) ---
 function captureAndCompose() {
     if (!nameInput.value) {
         alert("Please enter your name before capturing the photo.");
         return;
     }
+    
+    // 1. CAPTURE FRAME IMMEDIATELY
     const capturedImage = getFrameFromVideo();
-    // Stop video stream and switch sections
+    
+    // 2. Stop video stream and switch sections
     if (video.srcObject) {
         video.srcObject.getTracks().forEach(track => track.stop());
     }
     captureSection.style.display = 'none';
     resultSection.style.display = 'block';
 
+    // 3. LOAD FRAME IMAGE
     const frameImg = new Image();
+    frameImg.src = 'Soma_Yagna_Transparent.png'; 
+    
+    // Add error handler for the frame image
     frameImg.onerror = () => {
-    // This alert will pop up if the image file is not found or corrupted
-    alert("CRITICAL ERROR: 'Soma_Yagna_Transparent.png' failed to load. Check file name and path.");
-    console.error("Image loading failed.");
+        alert("CRITICAL ERROR: 'Soma_Yagna_Transparent.png' failed to load. Check file name and path.");
+        console.error("Image loading failed.");
     };
+
+    // 4. WAIT FOR BOTH IMAGES TO LOAD BEFORE DRAWING
+    
+    // We'll use the FRAME IMAGE's onload to kick off the drawing sequence.
     frameImg.onload = () => {
-        // 1. Draw the captured photo (adjust coordinates as needed)
-        const photoWidth = 550; 
-        const photoHeight = 450;
-        const photoX = 25;
-        const photoY = 320;
-        //ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, photoX, photoY, photoWidth, photoHeight);
-        ctx.drawImage(capturedImage, photoX, photoY, photoWidth, photoHeight);
-
-        // 2. Draw the PNG Frame OVER the photo
-        ctx.drawImage(frameImg, 0, 0, POSTER_WIDTH, POSTER_HEIGHT);
-
-        // 3. Draw the Text Details
-        const name = nameInput.value;
-        const phone = phoneInput.value;
-
-        ctx.fillStyle = '#000000'; // Black text
-        ctx.textAlign = 'center';
         
-        // Name Styling
-        ctx.font = 'bold 36px sans-serif';
-        ctx.fillText(name, POSTER_WIDTH / 2, 750); 
+        // NOW, we must also wait for the CAPTURED IMAGE to be ready.
+        capturedImage.onload = () => {
 
-        // Phone Styling (smaller, optional)
-        if (phone) {
-            ctx.font = '24px sans-serif';
-            ctx.fillText(phone, POSTER_WIDTH / 2, 780); 
+            // 5. START DRAWING (Photo and text draw correctly now!)
+            
+            // Draw the captured photo (adjust coordinates as needed)
+            const photoWidth = 550; 
+            const photoHeight = 450;
+            const photoX = 25;
+            const photoY = 320;
+            
+            // Draw the static captured image object
+            ctx.drawImage(capturedImage, photoX, photoY, photoWidth, photoHeight);
+
+            // Draw the PNG Frame OVER the photo
+            ctx.drawImage(frameImg, 0, 0, POSTER_WIDTH, POSTER_HEIGHT);
+
+            // Draw the Text Details
+            const name = nameInput.value;
+            const phone = phoneInput.value;
+
+            ctx.fillStyle = '#000000'; // Black text
+            ctx.textAlign = 'center';
+            
+            // Name Styling
+            ctx.font = 'bold 36px sans-serif';
+            ctx.fillText(name, POSTER_WIDTH / 2, 750); 
+
+            // Phone Styling (smaller, optional)
+            if (phone) {
+                ctx.font = '24px sans-serif';
+                ctx.fillText(phone, POSTER_WIDTH / 2, 780); 
+            }
+        }; 
+        
+        // If the captured image is already loaded (it often is), this triggers the onload immediately.
+        if (capturedImage.complete) {
+            capturedImage.onload();
         }
     };
-    // **IMPORTANT: Must be in the same folder as index.html**
-    frameImg.src = 'Soma_Yagna_Transparent.png'; 
 }
 
 // --- D. Download ---
@@ -155,6 +177,7 @@ resetBtn.addEventListener('click', resetApp);
 // Start the app on load
 
 window.onload = setupCamera;
+
 
 
 
