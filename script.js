@@ -91,12 +91,12 @@ function captureAndCompose() {
         
         // Name Styling
         ctx.font = 'bold 36px sans-serif';
-        ctx.fillText(name, POSTER_WIDTH / 2, POSTER_HEIGHT - 120); 
+        ctx.fillText(name, POSTER_WIDTH / 2, 750); 
 
         // Phone Styling (smaller, optional)
         if (phone) {
             ctx.font = '24px sans-serif';
-            ctx.fillText(phone, POSTER_WIDTH / 2, POSTER_HEIGHT - 70); 
+            ctx.fillText(phone, POSTER_WIDTH / 2, 780); 
         }
     };
     // **IMPORTANT: Must be in the same folder as index.html**
@@ -135,6 +135,7 @@ resetBtn.addEventListener('click', resetApp);
 // Start the app on load
 
 window.onload = setupCamera;
+
 
 
 
