@@ -141,10 +141,10 @@ function captureAndCompose() {
             ctx.textAlign = 'center';
             
             // Name Styling: Smaller font and adjusted coordinates to fit inside the name box
-            ctx.font = 'bold 24px sans-serif'; 
+            ctx.font = 'bold 20px sans-serif'; 
             // X-coordinate matches the photo center X (435)
             // Y-coordinate (275) is vertically centered in the name box
-            ctx.fillText(name, circleCenterX, 250); 
+            ctx.fillText(name, circleCenterX, 200); 
             
             // NOTE: Phone number drawing is intentionally removed.
         }; 
@@ -187,6 +187,7 @@ resetBtn.addEventListener('click', resetApp);
 
 // Start the app on load
 window.onload = setupCamera;
+
 
 
 
