@@ -22,54 +22,39 @@ const NAME_FIELD = "entry.1741974273";
 const PHONE_FIELD = "entry.729256729";
 
 // =======================================================
-// CAMERA (BLACK-SCREEN SAFE IMPLEMENTATION)
+// CAMERA (STABLE + WORKS ON LAPTOP & MOBILE)
 // =======================================================
 
-let currentFacingMode = "user"; // prefer selfie
 let currentStream = null;
 
 async function setupCamera() {
     try {
+        // Stop old stream
         if (currentStream) {
             currentStream.getTracks().forEach(track => track.stop());
         }
 
-        let stream;
-
-        try {
-            // ✅ TRY preferred camera first
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: currentFacingMode },
-                audio: false
-            });
-        } catch {
-            // ✅ FALLBACK — guaranteed to work if camera exists
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: false
-            });
-        }
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,   // 🔑 SIMPLE = RELIABLE
+            audio: false
+        });
 
         currentStream = stream;
         video.srcObject = stream;
-        video.setAttribute("playsinline", true);
-        video.play();
 
-        // Mirror preview only for selfie
-        video.style.transform =
-            currentFacingMode === "user" ? "scaleX(-1)" : "none";
+        video.muted = true;        // REQUIRED for autoplay
+        video.playsInline = true;  // iOS Safari
+
+        video.onloadedmetadata = () => {
+            video.play().catch(err => {
+                console.error("Video play failed:", err);
+            });
+        };
 
     } catch (err) {
         console.error("Camera access failed:", err);
-        alert("Camera could not be started. Please allow camera permission.");
+        alert("Camera access failed. Please allow permission.");
     }
-}
-
-// Optional camera switch (safe)
-function switchCamera() {
-    currentFacingMode =
-        currentFacingMode === "user" ? "environment" : "user";
-    setupCamera();
 }
 
 // =======================================================
@@ -89,7 +74,7 @@ function sendDataToSheets(name, phone) {
 }
 
 // =======================================================
-// CAPTURE FRAME (UN-MIRRORED OUTPUT)
+// CAPTURE FRAME (NO MIRROR ISSUES)
 // =======================================================
 
 function getFrameFromVideo() {
@@ -97,11 +82,6 @@ function getFrameFromVideo() {
     tempCanvas.width = video.videoWidth;
     tempCanvas.height = video.videoHeight;
     const tempCtx = tempCanvas.getContext('2d');
-
-    if (currentFacingMode === "user") {
-        tempCtx.translate(tempCanvas.width, 0);
-        tempCtx.scale(-1, 1);
-    }
 
     tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
 
