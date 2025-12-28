@@ -49,8 +49,29 @@ button {
     font-size: 16px;
     transition: background-color 0.3s;
 }
+/* Always constrain images and canvases */
+img, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Optional: center canvas and limit its max width */
+.poster-container,
+#yourCanvasID {
+  width: 100%;
+  max-width: 100vw;
+  display: block;
+  margin: 0 auto;
+}
+
 
 button:hover {
     background-color: #45a049;
 
 }
+
