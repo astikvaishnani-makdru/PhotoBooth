@@ -75,3 +75,14 @@ button:hover {
 
 }
 
+@media screen and (max-width: 767px) {
+  .poster-container {
+    padding: 0 10px; /* small margins on mobile */
+  }
+  .poster-container img,
+  .poster-container canvas {
+    width: 100%;
+    height: auto;
+  }
+}
+
