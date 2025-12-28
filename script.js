@@ -15,61 +15,65 @@ posterCanvas.width = POSTER_WIDTH;
 posterCanvas.height = POSTER_HEIGHT;
 
 // =======================================================
-// === GOOGLE FORMS DATA COLLECTION CONFIG ===
+// GOOGLE FORM CONFIG
+// =======================================================
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScBgiUAmxaQD03NKGhu7W2K9ZhXOPaTYyoLaBdlp_0h6vEvNA/formResponse";
 const NAME_FIELD = "entry.1741974273";
 const PHONE_FIELD = "entry.729256729";
-// =======================================================
-
 
 // =======================================================
-// === A. CAMERA INITIALIZATION (MOBILE-SAFE + SWITCHING) ===
+// CAMERA (BLACK-SCREEN SAFE IMPLEMENTATION)
 // =======================================================
 
-let currentFacingMode = "user"; // ✅ front camera default
+let currentFacingMode = "user"; // prefer selfie
 let currentStream = null;
 
 async function setupCamera() {
     try {
-        // Stop old stream if exists
         if (currentStream) {
             currentStream.getTracks().forEach(track => track.stop());
         }
 
-        const constraints = {
-            video: {
-                facingMode: { ideal: currentFacingMode }
-            },
-            audio: false
-        };
+        let stream;
 
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        try {
+            // ✅ TRY preferred camera first
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: currentFacingMode },
+                audio: false
+            });
+        } catch {
+            // ✅ FALLBACK — guaranteed to work if camera exists
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false
+            });
+        }
+
         currentStream = stream;
-
         video.srcObject = stream;
-        video.setAttribute("playsinline", true); // ✅ iOS fix
+        video.setAttribute("playsinline", true);
         video.play();
 
-        // ✅ Mirror preview only for selfie camera
+        // Mirror preview only for selfie
         video.style.transform =
             currentFacingMode === "user" ? "scaleX(-1)" : "none";
 
     } catch (err) {
         console.error("Camera access failed:", err);
-        alert("Camera access denied or failed. Please ensure HTTPS is used.");
+        alert("Camera could not be started. Please allow camera permission.");
     }
 }
 
-// OPTIONAL: Camera switch support (if you add a button later)
+// Optional camera switch (safe)
 function switchCamera() {
     currentFacingMode =
         currentFacingMode === "user" ? "environment" : "user";
     setupCamera();
 }
 
-
 // =======================================================
-// === B. DATA SUBMISSION TO GOOGLE SHEETS ===
+// DATA SUBMISSION
 // =======================================================
 
 function sendDataToSheets(name, phone) {
@@ -81,14 +85,11 @@ function sendDataToSheets(name, phone) {
         method: 'POST',
         body: formData,
         mode: 'no-cors'
-    })
-    .then(() => console.log("Data submitted successfully"))
-    .catch(err => console.error("Data submission failed:", err));
+    }).catch(() => {});
 }
 
-
 // =======================================================
-// === C. FRAME CAPTURE (UN-MIRRORED FOR POSTER) ===
+// CAPTURE FRAME (UN-MIRRORED OUTPUT)
 // =======================================================
 
 function getFrameFromVideo() {
@@ -97,7 +98,6 @@ function getFrameFromVideo() {
     tempCanvas.height = video.videoHeight;
     const tempCtx = tempCanvas.getContext('2d');
 
-    // ❗️Un-mirror the captured image (poster should NOT be mirrored)
     if (currentFacingMode === "user") {
         tempCtx.translate(tempCanvas.width, 0);
         tempCtx.scale(-1, 1);
@@ -105,7 +105,86 @@ function getFrameFromVideo() {
 
     tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
 
-    const capturedImage = new Image();
-    capturedImage.src = tempCanvas.toDataURL('image/jpeg');
+    const img = new Image();
+    img.src = tempCanvas.toDataURL('image/jpeg');
+    return img;
+}
 
-    re
+// =======================================================
+// POSTER COMPOSITION
+// =======================================================
+
+function captureAndCompose() {
+    if (!nameInput.value) {
+        alert("Please enter your name.");
+        return;
+    }
+
+    const capturedImage = getFrameFromVideo();
+
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+    }
+
+    captureSection.style.display = 'none';
+    resultSection.style.display = 'block';
+
+    const frameImg = new Image();
+    frameImg.src = 'Yagna.png';
+
+    frameImg.onload = () => {
+        capturedImage.onload = () => {
+
+            const cx = 435;
+            const cy = 190;
+            const r = 105;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.clip();
+
+            ctx.drawImage(capturedImage, cx - r, cy - r, r * 2, r * 2);
+            ctx.restore();
+
+            ctx.drawImage(frameImg, 0, 0, POSTER_WIDTH, POSTER_HEIGHT);
+
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 20px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(nameInput.value, cx, 240);
+        };
+
+        if (capturedImage.complete) capturedImage.onload();
+    };
+}
+
+// =======================================================
+// DOWNLOAD & RESET
+// =======================================================
+
+function downloadPoster() {
+    sendDataToSheets(nameInput.value, phoneInput.value);
+
+    const a = document.createElement('a');
+    a.href = posterCanvas.toDataURL('image/png');
+    a.download = `EventPoster_${nameInput.value.replace(/\s/g, '_')}.png`;
+    a.click();
+}
+
+function resetApp() {
+    ctx.clearRect(0, 0, POSTER_WIDTH, POSTER_HEIGHT);
+    resultSection.style.display = 'none';
+    captureSection.style.display = 'block';
+    setupCamera();
+}
+
+// =======================================================
+// EVENTS
+// =======================================================
+
+captureBtn.addEventListener('click', captureAndCompose);
+downloadBtn.addEventListener('click', downloadPoster);
+resetBtn.addEventListener('click', resetApp);
+
+window.onload = setupCamera;
